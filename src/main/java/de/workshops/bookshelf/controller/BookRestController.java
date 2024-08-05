@@ -1,5 +1,6 @@
 package de.workshops.bookshelf.controller;
 
+import de.workshops.bookshelf.configuration.BookshelfProperties;
 import de.workshops.bookshelf.domain.Book;
 import de.workshops.bookshelf.domain.BookNotFoundException;
 import de.workshops.bookshelf.domain.BookSearchRequest;
@@ -17,9 +18,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/book")
@@ -28,8 +32,11 @@ public class BookRestController {
 
     private final BookService bookService;
 
-    public BookRestController(BookService bookService) {
+    private final BookshelfProperties bookshelfProperties;
+
+    public BookRestController(BookService bookService, BookshelfProperties bookshelfProperties) {
         this.bookService = bookService;
+        this.bookshelfProperties = bookshelfProperties;
     }
 
     @GetMapping
@@ -50,6 +57,19 @@ public class BookRestController {
     @PostMapping("/search")
     public List<Book> searchBooks(@RequestBody BookSearchRequest bookSearchRequest) {
         return bookService.searchBooks(bookSearchRequest);
+    }
+
+    @PostMapping
+    @ResponseStatus(CREATED)
+    public void createBook(@RequestBody Book book) {
+        bookService.createBook(book);
+    }
+
+    @GetMapping("/{isbn}/lookup")
+    public String lookup(@PathVariable String isbn) {
+        return String.format("Start lookup for ISBN %s as %s at %s with key '%s'",
+                isbn, bookshelfProperties.getOwner(),
+                bookshelfProperties.getIsbnLookup().getUrl(), bookshelfProperties.getIsbnLookup().getApiKey());
     }
 
     @ExceptionHandler

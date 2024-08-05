@@ -6,13 +6,17 @@ import de.workshops.bookshelf.domain.Book;
 import de.workshops.bookshelf.repository.BookRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.INDENT_OUTPUT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -56,5 +60,14 @@ class BookRestControllerMockMvcTest {
         assertThat(books).anySatisfy(book -> {
             assertThat(book.getTitle()).isEqualTo("Clean Code");
         });
+    }
+
+    @TestConfiguration
+    static class JacksonTestConfiguration {
+
+        @Bean
+        public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+            return builder -> builder.featuresToEnable(INDENT_OUTPUT);
+        }
     }
 }

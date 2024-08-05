@@ -3,12 +3,12 @@ package de.workshops.bookshelf.controller;
 import de.workshops.bookshelf.domain.Book;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.web.client.RestClient;
 
 import java.util.List;
@@ -22,11 +22,8 @@ class BookRestControllerRestClientTest {
     RestClient restClient;
 
     @BeforeEach
-    void setUp(
-            @Autowired RestClient.Builder restClientBuilder,
-            @LocalServerPort int port
-    ) {
-        restClient = restClientBuilder.baseUrl("http://localhost:" + port).build();
+    void setUp(@LocalServerPort int port) {
+        restClient = RestClient.builder().baseUrl("http://localhost:" + port).build();
     }
 
     @Test
@@ -41,5 +38,18 @@ class BookRestControllerRestClientTest {
 
         List<Book> books = response.getBody();
         assertThat(books).hasSize(3);
+    }
+
+    @Test
+    @DirtiesContext
+    void POST_book_should_save_new_book() {
+        Book newBook = new Book("New Book", "A newly written book", "Rising Star", "111111");
+
+        ResponseEntity<Void> response = restClient.post().uri("/book").body(newBook).retrieve().toBodilessEntity();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        List<Book> books = restClient.get().uri("/book").retrieve().body(new ParameterizedTypeReference<>() {
+        });
+        assertThat(books).contains(newBook);
     }
 }
