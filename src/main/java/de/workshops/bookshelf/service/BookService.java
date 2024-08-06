@@ -18,39 +18,24 @@ public class BookService {
     }
 
     public List<Book> getAllBooks() {
-        return bookRepository.getAllBooks();
+        return bookRepository.findAll();
     }
 
     public Book getSingleBookByIsbn(String isbn) {
-        return bookRepository.getAllBooks().stream()
-                .filter(book -> hasIsbn(book, isbn))
-                .findFirst()
+        return bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new BookNotFoundException("ISBN " + isbn));
     }
 
     public Book searchBookByAuthor(String author) {
-        return bookRepository.getAllBooks().stream()
-                .filter(book -> hasAuthor(book, author))
-                .findFirst()
+        return bookRepository.findByAuthor(author)
                 .orElseThrow(() -> new BookNotFoundException("author = '" + author + "'"));
     }
 
     public List<Book> searchBooks(BookSearchRequest bookSearchRequest) {
-        return bookRepository.getAllBooks().stream()
-                .filter(book -> bookSearchRequest.getIsbn() == null || hasIsbn(book, bookSearchRequest.getIsbn()))
-                .filter(book -> bookSearchRequest.getAuthor() == null || hasAuthor(book, bookSearchRequest.getAuthor()))
-                .toList();
+        return bookRepository.findByIsbnOrAuthor(bookSearchRequest.getIsbn(), bookSearchRequest.getAuthor());
     }
 
     public void createBook(Book book) {
-        bookRepository.saveBook(book);
-    }
-
-    private boolean hasIsbn(Book book, String isbn) {
-        return book.getIsbn().equals(isbn);
-    }
-
-    private boolean hasAuthor(Book book, String author) {
-        return book.getAuthor().contains(author);
+        bookRepository.save(book);
     }
 }

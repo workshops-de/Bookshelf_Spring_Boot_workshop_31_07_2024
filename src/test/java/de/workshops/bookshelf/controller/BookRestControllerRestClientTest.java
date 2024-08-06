@@ -50,6 +50,8 @@ class BookRestControllerRestClientTest {
 
         List<Book> books = restClient.get().uri("/book").retrieve().body(new ParameterizedTypeReference<>() {
         });
-        assertThat(books).contains(newBook);
+        assertThat(books).anySatisfy(book -> {
+            assertThat(book).usingRecursiveComparison().ignoringFields("id").isEqualTo(newBook);
+        });
     }
 }

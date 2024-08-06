@@ -28,7 +28,7 @@ class BookRestControllerRestAssuredHttpTest {
 
     @Test
     void GET_book_returns_all_books() {
-        List<Book> books = bookRepository.getAllBooks();
+        List<Book> books = bookRepository.findAll();
 
         given().
             log().all().

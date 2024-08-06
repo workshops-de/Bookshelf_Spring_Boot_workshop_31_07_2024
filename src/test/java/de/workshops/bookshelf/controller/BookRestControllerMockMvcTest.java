@@ -40,7 +40,7 @@ class BookRestControllerMockMvcTest {
 
     @Test
     void GET_book_should_return_all_books() throws Exception {
-        List<Book> books = bookRepository.getAllBooks();
+        List<Book> books = bookRepository.findAll();
 
         mvc.perform(get("/book"))
                 .andDo(print())
