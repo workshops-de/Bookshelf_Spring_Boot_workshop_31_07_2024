@@ -27,7 +27,7 @@
     <!-- Log levels: trace, debug, info, warn, error, off -->
     <logger name="de.workshops" level="debug"/>
 
-    <logger name="liquibase" level="warn"/>
+    <logger name="liquibase" level="info"/>
     <logger name="org.springframework" level="warn"/>
     <logger name="com.zaxxer.hikari" level="info"/>
     <logger name="org.apache" level="warn"/>

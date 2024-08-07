@@ -1,10 +1,14 @@
 package de.workshops.bookshelf.controller;
 
+import de.workshops.bookshelf.configuration.TestUser;
 import de.workshops.bookshelf.domain.Book;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,11 +23,25 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class BookRestControllerRestClientTest {
 
+    TestUser testUser;
+
     RestClient restClient;
 
     @BeforeEach
-    void setUp(@LocalServerPort int port) {
-        restClient = RestClient.builder().baseUrl("http://localhost:" + port).build();
+    void setUp(@LocalServerPort int port, @Autowired ApplicationContext context) {
+        testUser = TestUser.create(context);
+
+        restClient = RestClient.builder()
+                .baseUrl("http://localhost:" + port)
+                .defaultHeaders(headers -> headers
+                        .setBasicAuth(testUser.getUsername(), testUser.getPassword())
+                )
+                .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        testUser.delete();
     }
 
     @Test

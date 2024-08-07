@@ -11,6 +11,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -39,6 +40,7 @@ class BookRestControllerMockMvcTest {
     BookRepository bookRepository;
 
     @Test
+    @WithMockUser
     void GET_book_should_return_all_books() throws Exception {
         List<Book> books = bookRepository.findAll();
 
@@ -50,6 +52,7 @@ class BookRestControllerMockMvcTest {
     }
 
     @Test
+    @WithMockUser
     void GET_book_should_return_at_least_one_Clean_Code_book() throws Exception {
         MvcResult result = mvc.perform(get("/book")).andReturn();
 
